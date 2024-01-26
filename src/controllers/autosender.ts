@@ -4,7 +4,9 @@ import moment from "moment";
 import accountController from "./account.controller";
 import { send } from "../utils/mailer";
 import Logger from "../library/Logger";
-
+import { join } from "path";
+import { decrypt } from "../utils/cryptography";
+import config from "../../view/src/config";
 
 export const start = async () => {
     Logger.info('AUTOSENDER START')
@@ -16,10 +18,28 @@ export const start = async () => {
     for (let mailToSend of mailsToSend) {
         mailModel.update({ id: mailToSend.id, status: 'pending' })
         let mailConfig = await accountController.get(mailToSend.user, mailToSend.module || '', false)
+
+        let attachments: { path: string, password: string; sms: boolean }[] = [];
+        if (mailToSend.attachments)
+            try {
+                attachments = JSON.parse(mailToSend.attachments)
+            } catch {
+                attachments = []
+            }
+
         let mailOptions = {
             to: mailToSend.email,
             subject: mailToSend.subject,
             body: mailToSend.desc,
+            password: decrypt(mailToSend.password, config.SECRETKEY),
+            attachments: attachments?.map((x: {
+                password: string; path: string; sms: boolean;
+            }, index: any) => {
+                return {
+                    // filename: `zal_${index + 1}${x.path.includes('.zip') ? '.zip' : ''}`,
+                    path: join(__dirname, x.path)
+                }
+            })
         }
 
         let mailResponse = await send(mailOptions, mailConfig)

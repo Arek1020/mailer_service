@@ -18,7 +18,7 @@ const mailModel = {
         return execute(query, opts, true)
     },
     insertMany: async (payload: any) => {
-        let query = 'INSERT INTO mails (company, active, sid, contractor, member, user, email, `desc`, subject, message_id, status, date, module, element) VALUES ?'
+        let query = 'INSERT INTO mails (company, active, sid, contractor, member, user, email, `desc`, subject, message_id, status, date, module, element, attachments, password) VALUES ?'
         return execute(query, payload, false)
     }
 }

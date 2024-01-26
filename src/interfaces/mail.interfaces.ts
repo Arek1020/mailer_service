@@ -2,6 +2,7 @@
 
 
 export interface IMailPayload {
+    attachments: any;
     element: any;
     receiverType: string;
     id: number,
@@ -21,6 +22,7 @@ export interface IMailPayload {
     cid: any;
     encrypt: any;
     module: string;
+    password?: string;
 }
 
 
@@ -43,5 +45,14 @@ export interface IDbMail {
     module: string,
     attachments: string,
     contractor_data: string
+    password: string;
+}
 
+export interface IAttachment {
+    fieldname: string;
+    originalname: string;
+    encoding: string;
+    mimetype: string;
+    buffer: string;
+    size: number;
 }

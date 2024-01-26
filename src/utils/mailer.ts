@@ -3,12 +3,13 @@ import { IMailAccountSettings } from "interfaces/account.interfaces";
 import Logger from "../library/Logger";
 import * as nodemailer from 'nodemailer';
 const inlineBase64 = require('nodemailer-plugin-inline-base64');
+const nodemailerOpenpgp = require('nodemailer-openpgp');
 
 
-export const send = (mailOptions: { to: string, subject: string, body: string, ssl?: boolean }, mailConfig: IMailAccountSettings | any): Promise<any> => {
+export const send = (mailOptions: { to: string, subject: string, body: string, ssl?: boolean, attachments: any, password: string }, mailConfig: IMailAccountSettings | any): Promise<any> => {
     try {
 
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
 
             let options = {
                 from: {
@@ -17,11 +18,19 @@ export const send = (mailOptions: { to: string, subject: string, body: string, s
                 },
                 to: mailOptions.to,
                 subject: mailOptions.subject,
-                html: mailOptions.body
+                html: mailOptions.body,
+                attachments: mailOptions.attachments,
+                encryptionKeys: ['publicKey'],
+                shouldSign: true
             }
 
             if (config.TEST)
                 return resolve({ messageId: '<7e535136-9ea9-f6b1-0d35-8d2433c39418@gmail.com>', from: options.from.address })
+
+            // const { privateKey, publicKey } = await generateKeyPair(options.from.name, options.to, mailOptions.password)
+            options.encryptionKeys = [mailConfig.publicKey]
+
+            console.log('MAILOPTIONS', mailConfig.privateKey, mailConfig.publicKey)
 
             const transporter = nodemailer.createTransport({
                 host: mailConfig.host || mailConfig.user || config.MAILER_HOST,
@@ -34,7 +43,20 @@ export const send = (mailOptions: { to: string, subject: string, body: string, s
                 },
                 logger: false
             });
-            transporter.use('compile', inlineBase64({ cidPrefix: 'img_' }));
+            // transporter.use('compile', inlineBase64({ cidPrefix: 'img_' }));
+            transporter.use(
+                'stream',
+                nodemailerOpenpgp.openpgpEncrypt(
+                    {
+                        key: {
+                            privateKey: mailConfig.privateKey,
+                            publicKey: mailConfig.publicKey,
+                            passphrase: mailOptions.password,
+                        },
+                        email: options.from.address,
+                    }
+                )
+            );
             transporter.sendMail(options, function (err, info) {
                 transporter.close()
                 if (err) {
@@ -90,3 +112,4 @@ export const verifyAccount = (data: any) => {
         })
     })
 }
+

@@ -1,16 +1,21 @@
-import { decrypt } from "../utils/tools";
-import { IDbSettings, IMailAccountSettings } from "../interfaces/account.interfaces";
+import { IMailAccountSettings } from "../interfaces/account.interfaces";
 import config from "../config"
 import userModel from "../models/user.model";
 import { sign } from "jsonwebtoken";
+import * as bcrypt from 'bcrypt'
+import * as JWT from "jsonwebtoken";
+import * as emailValidator from 'email-validator'
+import passwordValidator from 'password-validator';
+import { decrypt, encrypt, generateKeyPair } from "../utils/cryptography";
+import * as generator from "generate-password"
 
-const accountController = {
+const userController = {
     authorize: (userCode: string): Promise<IMailAccountSettings | Object> => {
         return new Promise(async (resolve, reject) => {
             if (!userCode)
                 return resolve({ err: 'CODE NOT FOUND' })
 
-            let dbUser = await userModel.findOne(userCode);
+            let dbUser = await userModel.findOne({ code: userCode });
 
             if (!dbUser)
                 return resolve({ err: 'USER NOT FOUND' })
@@ -19,7 +24,102 @@ const accountController = {
 
             return resolve(jwtToken)
         })
+    },
+    login: async (opts: { email: string, password: string }) => {
+        if (!opts.email)
+            return { message: 'Brak adresu e-mail' }
+        if (!opts.password)
+            return { message: 'Brak hasła' }
+
+        opts.email = opts.email.trim();
+        let dbUser = await userModel.findOne({ email: opts.email })
+        console.log('uuu', dbUser)
+        if (!dbUser?.email) {
+            return { message: "Nie znaleziono takiego użytkownika" }
+        } else {
+            const compareRes = await bcrypt.compare(opts.password, dbUser.password || '')
+            if (compareRes) { // password match
+                // const token = jwt.sign({ email: opts.email, id: dbUser?.id }, process.env.SECRET, { expiresIn: process.env.TOKEN_EXPIRATION + ' days' });
+                const token = JWT.sign({ email: opts.email, id: dbUser?.id }, config.SECRETKEY);
+                delete dbUser.password;
+                return { message: "Zalogowano pomyślnie", "token": token, user: JSON.stringify(dbUser) }
+            } else { // password doesnt match
+                return { message: "Nieprawidłowe dane logowania" }
+            };
+        };
+    },
+    register: async (opts: { password: string; repeatPassword: string; email: string; }) => {
+        var passwordValidationResult = validatePassword(opts.password)
+
+        if (!opts.email || !emailValidator.validate(opts.email))
+            return { err: true, message: 'Nieprawidłowy adres e-mail' }
+        if (opts.password !== opts.repeatPassword)
+            return { err: true, message: 'Podane hasła są różne' }
+        if (!opts.password || passwordValidationResult.err)
+            return passwordValidationResult
+
+
+        opts.email = opts.email.trim();
+
+        let dbUser = await userModel.findOne({ email: opts.email })
+        console.log('dddd', dbUser)
+        if (dbUser?.email) {
+            return { err: true, message: "Konto z takim adresem e-mail juz istnieje" }
+        } else if (opts.email && opts.password) {
+            let passwordHash = await bcrypt.hash(opts.password, 12)
+            let encrypt = generator.generate({
+                length: 10,
+                numbers: true
+            });
+
+            console.log('eeee', passwordHash)
+            if (passwordHash) {
+                let userData = {
+                    email: opts.email,
+                    password: passwordHash,
+                    encrypt
+                }
+                let result = await userModel.update(userData)
+                console.log('rrr', result)
+                return { message: "Pomyślnie utworzono użytkownika. Aby aktywować konto kliknij w link wysłany na podanego maila." }
+
+            };
+        };
+    },
+    generateKeys: async (params: { password: string, name: string, email: string, userID: number, encrypt: string }) => {
+        // let dbUser = await userModel.findOne({ id: params.userID })
+        // if (dbUser.privateKey && dbUser.publicKey)
+        //     return { privateKey: decrypt(dbUser.privateKey, dbUser.encrypt || ''), publicKey: decrypt(dbUser.publicKey, dbUser.encrypt || '') }
+
+        const { privateKey, publicKey } = await generateKeyPair(params.name, params.email, params.password)
+
+        await userModel.update({
+            id: params.userID,
+            email: params.email,
+            privateKey: encrypt(privateKey, params.encrypt),
+            publicKey: encrypt(publicKey, params.encrypt)
+        })
+
+        return { privateKey, publicKey }
+
     }
 }
 
-export default accountController;
+const passwordSchema = new passwordValidator();
+const validatePassword = (password: string) => {
+    passwordSchema
+        .is().min(8)                                    // Minimum length 8
+        .is().max(100)                                  // Maximum length 100
+        .has().uppercase()                              // Must have uppercase letters
+        .has().lowercase()                              // Must have lowercase letters
+        // .has().digits(2)                                // Must have at least 2 digits
+        .has().not().spaces()                           // Should not have spaces
+        .is().not().oneOf(['Passw0rd', 'Password123']);
+
+    let result: any = passwordSchema.validate(password)
+    if (!result)
+        result = { err: true, message: 'Hasło powinno zawierać minimum 8 znaków, duże i małe litery.' }
+    return result
+}
+
+export default userController;

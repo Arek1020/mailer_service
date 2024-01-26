@@ -1,30 +1,32 @@
 import express, { Request, Response } from 'express';
-import mongoose from 'mongoose';
 import Logger from './library/Logger';
 import apiRouter from './routers/api.router'
+import userRouter from './routers/user.router'
+import mailRouter from './routers/mail.router'
 import config from './config';
 import * as DbMainConnector from './utils/dbMain'
-// import * as DbPushekConnector from './utils/dbPushek'
 import * as autosender from './controllers/autosender'
 import scheduler from 'node-schedule'
-// interface User {
-//   id: number;
-//   name: string;
-//   email: string;
-// }
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+import { isAuthorize } from './controllers/middleware';
+
+const cors = require('cors')
+
 const app = express();
+
+app.use(cors())
+
 app.use(express.json());
 
 // initialize mysql pool
 DbMainConnector.init();
-// DbPushekConnector.init();
 
 app.get('/status', (req: Request, res: Response) => {
   res.send("Status: WORKING :)");
 });
 
-app.use(['/mailer', '/'], apiRouter)
+app.use(['/user'], userRouter)
+app.use(['/mail'], isAuthorize, mailRouter)
+app.use(['/api'], apiRouter)
 
 scheduler.scheduleJob("*/15 * * * *", autosender.start)
 
