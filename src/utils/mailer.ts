@@ -43,7 +43,7 @@ export const send = (mailOptions: { to: string, subject: string, body: string, s
                 },
                 logger: false
             });
-            // transporter.use('compile', inlineBase64({ cidPrefix: 'img_' }));
+            transporter.use('compile', inlineBase64({ cidPrefix: 'img_' }));
             transporter.use(
                 'stream',
                 nodemailerOpenpgp.openpgpEncrypt(

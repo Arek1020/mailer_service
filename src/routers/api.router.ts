@@ -26,7 +26,6 @@ router.post('/sendWithAttachments', requireSecret, upload.array('attachments'), 
     const files = req.files as Express.Multer.File[];
     req.body.attachments = files
     req.body.receivers = JSON.parse(req.body.receivers)
-    console.log('rgbbbb', req.body, req.files)
     let result = await mailController.send(req.body)
     return res.send(result)
 })

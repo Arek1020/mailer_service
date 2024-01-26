@@ -33,7 +33,6 @@ const userController = {
 
         opts.email = opts.email.trim();
         let dbUser = await userModel.findOne({ email: opts.email })
-        console.log('uuu', dbUser)
         if (!dbUser?.email) {
             return { message: "Nie znaleziono takiego użytkownika" }
         } else {
@@ -62,7 +61,6 @@ const userController = {
         opts.email = opts.email.trim();
 
         let dbUser = await userModel.findOne({ email: opts.email })
-        console.log('dddd', dbUser)
         if (dbUser?.email) {
             return { err: true, message: "Konto z takim adresem e-mail juz istnieje" }
         } else if (opts.email && opts.password) {
@@ -72,7 +70,6 @@ const userController = {
                 numbers: true
             });
 
-            console.log('eeee', passwordHash)
             if (passwordHash) {
                 let userData = {
                     email: opts.email,
@@ -80,17 +77,12 @@ const userController = {
                     encrypt
                 }
                 let result = await userModel.update(userData)
-                console.log('rrr', result)
                 return { message: "Pomyślnie utworzono użytkownika. Aby aktywować konto kliknij w link wysłany na podanego maila." }
 
             };
         };
     },
     generateKeys: async (params: { password: string, name: string, email: string, userID: number, encrypt: string }) => {
-        // let dbUser = await userModel.findOne({ id: params.userID })
-        // if (dbUser.privateKey && dbUser.publicKey)
-        //     return { privateKey: decrypt(dbUser.privateKey, dbUser.encrypt || ''), publicKey: decrypt(dbUser.publicKey, dbUser.encrypt || '') }
-
         const { privateKey, publicKey } = await generateKeyPair(params.name, params.email, params.password)
 
         await userModel.update({
@@ -101,7 +93,6 @@ const userController = {
         })
 
         return { privateKey, publicKey }
-
     }
 }
 

@@ -1,9 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import config from './../config'
-import accountController from "./account.controller";
 import userModel from "../models/user.model";
-import { IDbUser } from "../interfaces/user.interfaces";
-import { verify } from "jsonwebtoken";
 import Logger from "../library/Logger";
 import * as JWT from "jsonwebtoken";
 
@@ -26,7 +23,6 @@ export const requireSecret = async (req: Request, res: Response, next: NextFunct
     if (!decodedToken)
         return res.status(403).json({ err: true, message: 'Brak autoryzacji - nieprawidłowy token' });
 
-    console.log('tttt', decodedToken)
 
     let user = decodedToken
     res.locals.user = user;
@@ -39,7 +35,6 @@ export const requireSecret = async (req: Request, res: Response, next: NextFunct
 export const isAuthorize = async (req: Request, res: Response, next: NextFunction) => {
 
     const authHeader = req.get("Authorization");
-    console.log('aaa', authHeader)
 
     if (!authHeader) {
         return res.status(401).json({ message: 'not authenticated' });
@@ -64,7 +59,6 @@ export const isAuthorize = async (req: Request, res: Response, next: NextFunctio
         let user = await userModel.findOne({ id: decodedToken.id })
         if (!user)
             return res.status(403).json({ message: 'forbidden' });
-        console.log('dddd', user, decodedToken)
 
         res.locals.user = user
         return next();
