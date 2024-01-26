@@ -14,7 +14,6 @@ export const decrypt = (text: string, key: string, iv_length?: number) => {
   let decipher = crypto.createDecipheriv(algorithm, key, iv)
 
   let decrypted = decipher.update(text, 'hex', 'utf8') + decipher.final('utf8')
-
   return decrypted
 };
 
@@ -35,7 +34,6 @@ export const encrypt = (text: string, key: string, iv_length?: number) => {
 
 // Funkcja szyfrująca klucz szyfrowania szyfrem Bacona
 const baconEncrypt = (key: string): string => {
-  console.log('acccc', key)
   const baconCipher: { [key: string]: string } = {
     'a': 'AAAAA', 'b': 'AAAAB', 'c': 'AAABA', 'd': 'AAABB', 'e': 'AABAA',
     'f': 'AABAB', 'g': 'AABBA', 'h': 'AABBB', 'i': 'ABAAA', 'j': 'ABAAB',

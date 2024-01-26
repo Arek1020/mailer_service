@@ -82,14 +82,15 @@ const userController = {
             };
         };
     },
-    generateKeys: async (params: { password: string, name: string, email: string, userID: number, encrypt: string }) => {
-        const { privateKey, publicKey } = await generateKeyPair(params.name, params.email, params.password)
+    generateKeys: async (params: { passphrase: string, name: string, email: string, userID: number, encrypt: string }) => {
+        const { privateKey, publicKey } = await generateKeyPair(params.name, params.email, params.passphrase)
 
         await userModel.update({
             id: params.userID,
             email: params.email,
             privateKey: encrypt(privateKey, params.encrypt),
-            publicKey: encrypt(publicKey, params.encrypt)
+            publicKey: encrypt(publicKey, params.encrypt),
+            passphrase: encrypt(params.passphrase, params.encrypt)
         })
 
         return { privateKey, publicKey }

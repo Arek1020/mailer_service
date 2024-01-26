@@ -27,6 +27,7 @@ export interface IMailPayload {
 
 
 export interface IDbMail {
+    privateKey: string;
     id: number,
     company: number,
     active: boolean,
@@ -46,6 +47,7 @@ export interface IDbMail {
     attachments: string,
     contractor_data: string
     password: string;
+    publicKey: string;
 }
 
 export interface IAttachment {

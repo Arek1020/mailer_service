@@ -34,17 +34,14 @@ HpDSk+yxCEQBANXj/oABNvayRyUW4MSIM2L9GhZ7YeluEeQejh2igucD
 =hySg
 -----END PGP PRIVATE KEY BLOCK-----`
 
-export const decrypt = async (message: string, password: string) => {
-
-    console.log('1111')
-
+export const decrypt = async (message: string, password: string, privateKeyArmored: string, publicKeyArmored: string) => {
     const publicKey = await openpgp.readKey({ armoredKey: publicKeyArmored });
 
     const privateKey = await openpgp.decryptKey({
         privateKey: await openpgp.readPrivateKey({ armoredKey: privateKeyArmored }),
         passphrase: password
     });
-    // const message = `sd`
+
     const encryptedMessage = await openpgp.readMessage({
         armoredMessage: message // parse armored message
     });
@@ -53,10 +50,10 @@ export const decrypt = async (message: string, password: string) => {
         verificationKeys: publicKey as any, // optional
         decryptionKeys: privateKey as any
     });
-    console.log('decryptedddd: ', decrypted)
+    return decrypted;
 }
 
-export const encrypt = async (message: string, password: string) => {
+export const encrypt = async (message: string, password: string, privateKeyArmored: string, publicKeyArmored: string,) => {
     const publicKey = await openpgp.readKey({ armoredKey: publicKeyArmored });
 
     const privateKey = await openpgp.decryptKey({
@@ -68,6 +65,5 @@ export const encrypt = async (message: string, password: string) => {
         encryptionKeys: publicKey,
         signingKeys: privateKey // optional
     });
-    console.log('encryptedddd: ', encrypted)
-
+    return encrypted;
 }

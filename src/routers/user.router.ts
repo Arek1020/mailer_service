@@ -28,7 +28,7 @@ router.post('/keys/generate', isAuthorize, async (req: Request, res: Response, n
     let result = await userController.generateKeys({
         userID: res.locals.user.id,
         email: res.locals.user.email,
-        password: req.body.password,
+        passphrase: req.body.passphrase,
         name: res.locals.user.name || res.locals.user.email,
         encrypt: res.locals.user.encrypt
     })

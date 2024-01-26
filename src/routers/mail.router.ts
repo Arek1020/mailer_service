@@ -19,7 +19,7 @@ router.post('/sendWithAttachments', upload.array('attachments'), async (req: Req
     const files = req.files as Express.Multer.File[];
     req.body.attachments = files
     req.body.receivers = JSON.parse(req.body.receivers)
-    let result = await mailController.send(req.body)
+    let result = await mailController.send(req.body, res.locals.user)
     return res.send(result)
 })
 
@@ -28,6 +28,9 @@ router.post('/account/verify', async (req: Request, res: Response, next: NextFun
     return res.send(result)
 })
 
-
+router.post('/decrypt', async (req: Request, res: Response, next: NextFunction) => {
+    let result = await mailController.decrypt(req.body)
+    return res.send(result)
+})
 
 export default router;

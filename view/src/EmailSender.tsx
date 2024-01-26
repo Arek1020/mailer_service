@@ -37,11 +37,9 @@ const EmailSender: React.FC = () => {
       // Logika obsługi wysyłki maila
 
       values.receivers = [{ email: values.email }];
-      console.log("Wysyłanie maila z danymi:", values);
       const formData = new FormData();
       for (const key in values) {
         if (values.hasOwnProperty(key)) {
-          console.log("kkk", key);
           if (key === "attachments")
             for (let file of values[key]) formData.append(key, file);
           else if (key === "receivers")
@@ -55,18 +53,11 @@ const EmailSender: React.FC = () => {
             formData.append(key, values[key] + "");
         }
       }
-      console.log("Wysyłanie maila z danymi formdata:", formData);
-      let result = await request.post(
+      await request.post(
         `${config.SERVER_URL}/mail/sendWithAttachments`,
         formData,
         authHeader()
       );
-      // let result = fetch(`${config.SERVER_URL}/sendWithAttachments`, {
-      //   method: "post",
-      //   headers: { Authorization: authHeader() },
-      //   body: formData,
-      // });
-      console.log("resuuuultt", result);
     },
   });
 

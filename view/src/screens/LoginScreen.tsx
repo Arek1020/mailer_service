@@ -50,7 +50,6 @@ const LoginScreen = (props: SignInProps) => {
       payload
     );
 
-    console.log("rrrrr", response);
     if (!response?.token && response.message) {
       setAlertContent(response.message);
       setAlert(true);

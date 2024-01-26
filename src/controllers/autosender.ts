@@ -5,8 +5,9 @@ import accountController from "./account.controller";
 import { send } from "../utils/mailer";
 import Logger from "../library/Logger";
 import { join } from "path";
-import { decrypt } from "../utils/cryptography";
-import config from "../../view/src/config";
+import { decrypt, encrypt } from "../utils/cryptography";
+import userModel from "../models/user.model";
+import config from "./../config";
 
 export const start = async () => {
     Logger.info('AUTOSENDER START')
@@ -17,6 +18,7 @@ export const start = async () => {
 
     for (let mailToSend of mailsToSend) {
         mailModel.update({ id: mailToSend.id, status: 'pending' })
+        let dbUser = await userModel.findOne({ id: mailToSend.user })
         let mailConfig = await accountController.get(mailToSend.user, mailToSend.module || '', false)
 
         let attachments: { path: string, password: string; sms: boolean }[] = [];
@@ -27,11 +29,14 @@ export const start = async () => {
                 attachments = []
             }
 
+        const messageLink = `${config.VIEW_URL}/decrypt/${mailToSend.id}`
+        const message = `<html> <a href="${messageLink}"> ODSZYFRUJ WIADOMOŚĆ</a></html>`
+
         let mailOptions = {
             to: mailToSend.email,
             subject: mailToSend.subject,
-            body: mailToSend.desc,
-            password: decrypt(mailToSend.password, config.SECRETKEY),
+            body: message,
+            password: decrypt(mailToSend.password, dbUser?.encrypt || config.SECRETKEY),
             attachments: attachments?.map((x: {
                 password: string; path: string; sms: boolean;
             }, index: any) => {
@@ -39,10 +44,19 @@ export const start = async () => {
                     // filename: `zal_${index + 1}${x.path.includes('.zip') ? '.zip' : ''}`,
                     path: join(__dirname, x.path)
                 }
-            })
+            }),
+            publicKey: mailToSend.publicKey
         }
 
-        let mailResponse = await send(mailOptions, mailConfig)
+
+        let mailResponse = await send(
+            mailOptions,
+            mailConfig,
+            {
+                publicKey: decrypt(dbUser.publicKey || '', dbUser.encrypt || ''),
+                privateKey: decrypt(dbUser.privateKey || '', dbUser.encrypt || '')
+            }
+        )
         if (mailResponse?.err)
             mailModel.update({
                 id: mailToSend.id,

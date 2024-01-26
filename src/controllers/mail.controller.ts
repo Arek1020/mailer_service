@@ -7,11 +7,14 @@ import { archive } from "../utils/archivier";
 import { writeFileSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
 import { removeDiacritics } from "../utils/diacritics";
-import { encrypt } from "../utils/cryptography";
+import { decrypt, encrypt } from "../utils/cryptography";
 import config from "./../config";
+import { IDbUser } from "interfaces/user.interfaces";
+import userModel from "../models/user.model";
+import * as pgp from "../utils/pgp"
 
 const mailController = {
-    send: (opts: IMailPayload) => {
+    send: (opts: IMailPayload, user?: IDbUser) => {
         console.log('--SEND-MAIL', opts)
         return new Promise(async (resolve, reject) => {
             if (!opts.message) {
@@ -25,13 +28,13 @@ const mailController = {
 
             // let mailConfig = mailConfigs.find((x: { modul: string; }) => x.modul == opts.module || x.modul == 'ci') || {}
             let payload = [];
+            const privateKey = decrypt(user?.privateKey || '', user?.encrypt || '')
+            const publicKey = decrypt(user?.publicKey || '', user?.encrypt || '')
 
 
             for (let r of opts.receivers) {
 
-                let message = opts.message
-
-                message = `<html>${message}</html>`
+                let message = await pgp.encrypt(opts.message, opts.password || '', privateKey || '', publicKey || '')
 
                 let attachmentsPath: { path: string }[] | null = null;
                 if (opts.attachments?.length)
@@ -43,7 +46,7 @@ const mailController = {
                 payload.push([
                     opts.cid, 1,
                     0, 0, 0,
-                    opts.user || 0,
+                    user?.id || 0,
                     r.email || r.Email || '',
                     message, opts.subject || '',
                     '', 'waiting',
@@ -51,7 +54,9 @@ const mailController = {
                     opts.module || '',
                     opts.element || null,
                     attachmentsPath ? JSON.stringify(attachmentsPath) : null,
-                    encrypt(opts.password || '', config.SECRETKEY)
+                    encrypt(opts.password || '', user?.encrypt || config.SECRETKEY),
+                    encrypt(publicKey || '', user?.encrypt || config.SECRETKEY),
+                    encrypt(privateKey || '', user?.encrypt || config.SECRETKEY)
                 ])
 
             }
@@ -123,6 +128,21 @@ const mailController = {
             [{ path }]
             :
             filesPaths.map(x => { return { path: x } })
+    },
+    decrypt: async (params: any) => {
+        let dbMail = await mailModel.findOne({ id: params.messageId })
+
+        if (!dbMail?.user)
+            return { err: 'Nie znaleziono wiadomości' }
+
+        let dbUser = await userModel.findOne({ id: dbMail.user })
+
+        const privateKey = decrypt(dbMail?.privateKey || '', dbUser?.encrypt || '')
+        const publicKey = decrypt(dbMail?.publicKey || '', dbUser?.encrypt || '')
+        const passphrase = decrypt(dbMail?.password || '', dbUser?.encrypt || '')
+
+        let decryptedMessage = await pgp.decrypt(dbMail.desc, passphrase, privateKey || '', publicKey || '')
+        return decryptedMessage;
     }
 }
 

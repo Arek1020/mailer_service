@@ -13,26 +13,18 @@ const KeyGenerator: React.FC = () => {
   // Inicjalizacja formik
   const formik = useFormik({
     initialValues: {
-      password: "",
+      passphrase: "",
       privateKey: "",
       publicKey: "",
     },
     onSubmit: async (values) => {
       // Logika obsługi wysyłki maila
-
-      console.log("Wysyłanie maila z danymi:", values);
-
       let result = await request.post(
         `${config.SERVER_URL}/user/keys/generate`,
         values,
         authHeader()
       );
-      // let result = fetch(`${config.SERVER_URL}/sendWithAttachments`, {
-      //   method: "post",
-      //   headers: { Authorization: authHeader() },
-      //   body: formData,
-      // });
-      console.log("resuuuultt", result);
+     
       formik.setFieldValue("privateKey", result.privateKey);
       formik.setFieldValue("publicKey", result.publicKey);
     },
@@ -60,12 +52,12 @@ const KeyGenerator: React.FC = () => {
               variant="outlined"
               fullWidth
               required
-              name="password"
-              value={formik.values.password}
+              name="passphrase"
+              value={formik.values.passphrase}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              error={formik.touched.password && Boolean(formik.errors.password)}
-              helperText={formik.touched.password && formik.errors.password}
+              error={formik.touched.passphrase && Boolean(formik.errors.passphrase)}
+              helperText={formik.touched.passphrase && formik.errors.passphrase}
             />
           </Grid>
           <Grid item xs={12}>

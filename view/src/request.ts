@@ -1,4 +1,5 @@
 import config from "./config";
+import axios from 'axios'
 
 const apiURL = config.SERVER_URL
 const request = {
@@ -11,17 +12,11 @@ const request = {
         if ((data instanceof FormData))
             delete headers['Content-Type']
 
-        const response = await fetch(`${url}`, {
-            method: 'POST',
-            body: (data instanceof FormData) ? data : JSON.stringify(data || {}),
-            headers: headers
-        })
-        if (response.status === 403) return window.location.href = '/login'
-        else if (response.status > 400) return { err: true, msg: 'UPSS! Coś poszło nie tak. Spróbuj ponownie później lub skontaktuj się z administratorem. Status błędu: ' + response.status }
         try {
-            return await response.json()
-        } catch (err) {
-            return response
+            const response = await axios.post(url, data, { headers });
+            return response.data
+        } catch (error) {
+            console.error('Error fetching data:', error);
         }
     },
     get: async (url: string, data: any) => {

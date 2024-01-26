@@ -10,6 +10,7 @@ import Missing from "./screens/Missing";
 import { RequireAuth } from "react-auth-kit";
 import RegisterScreen from "./screens/RegisterScreen";
 import ComposeEmail from "./screens/ComposeEmail";
+import DecryptEmail from "./screens/DecryptEmail";
 
 const App: React.FC = () => {
   return (
@@ -24,6 +25,14 @@ const App: React.FC = () => {
           element={
             <RequireAuth loginPath={"/login"}>
               <ComposeEmail />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/decrypt/:messageId"
+          element={
+            <RequireAuth loginPath={"/login"}>
+              <DecryptEmail />
             </RequireAuth>
           }
         />
