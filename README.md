@@ -1,6 +1,6 @@
 # mailer_service
 
-This project is simple service written in TypeScript to sending mails. 
+<!-- This project is simple service written in TypeScript to sending mails. 
 If you want to send mail on '/send' endpoint, first you must to get your authorization key.
 
 How to get authorization key: 
@@ -11,4 +11,4 @@ How to get authorization key:
 Tech stack: 
   - TypeScript
   - Express
-  - MySql
+  - MySql -->
