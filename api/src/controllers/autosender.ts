@@ -7,7 +7,7 @@ import Logger from "../library/Logger";
 import { join } from "path";
 import { decrypt, encrypt } from "../utils/cryptography";
 import userModel from "../models/user.model";
-import config from "./../config";
+import config from "../config";
 
 export const start = async () => {
     Logger.info('AUTOSENDER START')

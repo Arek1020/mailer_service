@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import config from './../config'
+import config from '../config'
 import userModel from "../models/user.model";
 import Logger from "../library/Logger";
 import * as JWT from "jsonwebtoken";

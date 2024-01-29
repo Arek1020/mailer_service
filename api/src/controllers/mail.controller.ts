@@ -8,7 +8,7 @@ import { writeFileSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
 import { removeDiacritics } from "../utils/diacritics";
 import { decrypt, encrypt } from "../utils/cryptography";
-import config from "./../config";
+import config from "../config";
 import { IDbUser } from "interfaces/user.interfaces";
 import userModel from "../models/user.model";
 import * as pgp from "../utils/pgp"
