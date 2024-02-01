@@ -4,8 +4,6 @@ import userModel from "../models/user.model";
 import Logger from "../library/Logger";
 import * as JWT from "jsonwebtoken";
 
-
-
 export const requireSecret = async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.get("Authorization");
     if (!authHeader)
@@ -14,7 +12,6 @@ export const requireSecret = async (req: Request, res: Response, next: NextFunct
     const token = authHeader.split(' ')[1];
     let decodedToken;
     try {
-        // decodedToken = verify(token, config.SECRETKEY);
         decodedToken = token == config.SECRETKEY;
     } catch (err) {
         Logger.error(err)
@@ -27,8 +24,6 @@ export const requireSecret = async (req: Request, res: Response, next: NextFunct
     let user = decodedToken
     res.locals.user = user;
 
-    // let settings = await accountController.get(user.id, req.body.name || 'DEFAULt ACCOUNT', false)
-    // res.locals.settings = settings;
     return next();
 }
 

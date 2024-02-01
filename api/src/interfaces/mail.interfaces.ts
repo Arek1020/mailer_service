@@ -31,8 +31,6 @@ export interface IDbMail {
     id: number,
     company: number,
     active: boolean,
-    sid: number,
-    contractor: number,
     user: number,
     from: string,
     email: string,
@@ -43,9 +41,7 @@ export interface IDbMail {
     date: string,
     date_delivered: string,
     element: number,
-    module: string,
     attachments: string,
-    contractor_data: string
     password: string;
     publicKey: string;
 }

@@ -2,7 +2,7 @@ import {  IMailAccountSettings } from "../interfaces/account.interfaces";
 import config from "../config"
 
 const accountController = {
-    get: (user: number, name: string, isPublic: boolean): Promise<IMailAccountSettings | Object> => {
+    get: (user: number,  isPublic: boolean): Promise<IMailAccountSettings | Object> => {
         return new Promise(async (resolve, reject) => {
             let mailConfig: IMailAccountSettings | Object = {
                 name: 'DEFAULT ACCOUNT',
