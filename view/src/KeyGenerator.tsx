@@ -67,6 +67,7 @@ const KeyGenerator: React.FC = () => {
               label="Klucz prywatny"
               variant="outlined"
               fullWidth
+              disabled
               name="privateKey"
               value={formik.values.privateKey}
               onChange={formik.handleChange}
@@ -84,6 +85,7 @@ const KeyGenerator: React.FC = () => {
               label="Klucz publiczny"
               variant="outlined"
               fullWidth
+              disabled
               name="publicKey"
               value={formik.values.publicKey}
               onChange={formik.handleChange}

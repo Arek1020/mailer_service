@@ -166,9 +166,9 @@ export default function RegisterScreen() {
                   </Link> */}
                 </Grid>
                 <Grid item>
-                  {/* <Link href="/login" variant="body2">
+                  <Link href="/login" variant="body2">
                     {"Masz konto? Zaloguj się."}
-                  </Link> */}
+                  </Link>
                 </Grid>
               </Grid>
               <Copyright sx={{ mt: 5 }} />

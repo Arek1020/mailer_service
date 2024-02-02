@@ -1,0 +1,24 @@
+{
+  "id": 145,
+  "mailOptions": {
+    "to": "mail@gmail.com",
+    "subject": "aaa",
+    "body": "<html> <a href=\"http://localhost:3000/decrypt/145\"> ODSZYFRUJ WIADOMOŚĆ</a></html>",
+    "password": "qwer",
+    "attachments": [],
+    "publicKey": ""
+  },
+  "mailConfig": {
+    "name": "DEFAULT ACCOUNT",
+    "host": "smtp.poczta.onet.pl",
+    "port": 465,
+    "smtpPort": 465,
+    "user": "mail@spoko.pl",
+    "alias": "",
+    "password": "password"
+  },
+  "keys": {
+    "publicKey": "",
+    "privateKey": ""
+  }
+}

@@ -1,0 +1,9 @@
+{
+    "name":"DEFAULT ACCOUNT",
+    "host":"smtp.poczta.onet.pl",
+    "port":465,
+    "smtpPort":465,
+    "user":"mail@spoko.pl",
+    "alias":"",
+    "password":"password"
+ }

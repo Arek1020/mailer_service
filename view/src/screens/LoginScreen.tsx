@@ -150,8 +150,13 @@ const LoginScreen = (props: SignInProps) => {
                 Zaloguj się
               </Button>
               <Grid container>
-                <Grid item xs></Grid>
-                <Grid item></Grid>
+                <Grid item xs>
+                </Grid>
+                <Grid item>
+                  <Link href="/register" variant="body2">
+                    {"Nie masz konta? Zarejestruj się"}
+                  </Link>
+                </Grid>
               </Grid>
             </Box>
           </Box>

@@ -1,0 +1,27 @@
+[
+  {
+    "id": 145,
+    "company": null,
+    "active": 1,
+    "sid": 0,
+    "contractor": 0,
+    "member": 0,
+    "user": 13,
+    "from": null,
+    "email": "mail@gmail.com",
+    "subject": "aaa",
+    "desc": "-----BEGIN PGP MESSAGE-----wV4DYYMpWWJgfRgSAQdAMjYHovswc0xFg/Obh5JpH6SJTjsE6pCX6WKT3WgSs2EwWt4x9zplkIkaynDpMbjGzjAXr0Tob2wL7arNykbn8rsm4r/iIADIsB8m5NBDoo1n0r8B1KLCmcyNah8TMVwl/qGl/2GqyYmn+QPTp8lOWEUhEA8m2Xx9/oPCqAMNGIIdUdYdAJIFHiPIbxBrDqFPGyoIMNAMp03Kc4nQwVDLCxsI0KYfxLUWhYxMOnxZmPNe7kUSK2yaWhQYrAVxUMxBbcMns4tSBeV45fxI/BnATAtkHTq3MFOOLIvaLn+zKyyx2Dy2T0p7LGQY8utANpGMMZonPSrtsuKfqdCScf5ymXHKIZn/Lf2BuwKESS1q9ToqBQ===7Sby-----END PGP MESSAGE-----\n",
+    "message_id": "",
+    "status": "waiting",
+    "date": "2024-02-01T18:11:22.000Z",
+    "date_delivered": null,
+    "element": null,
+    "module": "",
+    "attachments": null,
+    "contractor_data": null,
+    "error": null,
+    "password": "f864a9c186c05c6cd83d13e7eb6a972a",
+    "publicKey": "",
+    "privateKey": ""
+}
+]

@@ -20,16 +20,20 @@ export const decrypt = async (message: string, password: string, privateKeyArmor
 }
 
 export const encrypt = async (message: string, password: string, privateKeyArmored: string, publicKeyArmored: string,) => {
-    const publicKey = await openpgp.readKey({ armoredKey: publicKeyArmored });
+    try {
+        const publicKey = await openpgp.readKey({ armoredKey: publicKeyArmored });
 
-    const privateKey = await openpgp.decryptKey({
-        privateKey: await openpgp.readPrivateKey({ armoredKey: privateKeyArmored }),
-        passphrase: password
-    });
-    const encrypted = await openpgp.encrypt({
-        message: await openpgp.createMessage({ text: message }), // input as Message object
-        encryptionKeys: publicKey,
-        signingKeys: privateKey // optional
-    });
-    return encrypted;
+        const privateKey = await openpgp.decryptKey({
+            privateKey: await openpgp.readPrivateKey({ armoredKey: privateKeyArmored }),
+            passphrase: password
+        });
+        const encrypted = await openpgp.encrypt({
+            message: await openpgp.createMessage({ text: message }), // input as Message object
+            encryptionKeys: publicKey,
+            signingKeys: privateKey // optional
+        });
+        return encrypted;
+    } catch (err) {
+        return { err }
+    }
 }

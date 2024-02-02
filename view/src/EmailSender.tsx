@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import {
@@ -8,12 +8,16 @@ import {
   Typography,
   Grid,
   Input,
+  Alert,
 } from "@mui/material";
 import config from "./config";
 import { useAuthHeader } from "react-auth-kit";
 import request from "./request";
+import Tools from "./utils/Tools";
+import { toast } from "react-toastify";
 
 const EmailSender: React.FC = () => {
+  const [error, setError] = useState<string>();
   const authHeader = useAuthHeader();
   // Definicja schematu walidacji za pomocą Yup
   const validationSchema = Yup.object({
@@ -53,11 +57,13 @@ const EmailSender: React.FC = () => {
             formData.append(key, values[key] + "");
         }
       }
-      await request.post(
+      let response = await request.post(
         `${config.SERVER_URL}/mail/sendWithAttachments`,
         formData,
         authHeader()
       );
+      if (response.error) return setError(response.msg);
+      setError("");
     },
   });
 
@@ -134,6 +140,9 @@ const EmailSender: React.FC = () => {
               error={formik.touched.password && Boolean(formik.errors.password)}
               helperText={formik.touched.password && formik.errors.password}
             />
+          </Grid>
+          <Grid item xs={12}>
+            {error ? <Alert severity="error">{error}</Alert> : <></>}
           </Grid>
           <Grid item xs={12}>
             <Button type="submit" variant="contained" color="primary">

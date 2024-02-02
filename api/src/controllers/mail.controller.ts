@@ -35,6 +35,9 @@ const mailController = {
             for (let r of opts.receivers) {
 
                 let message = await pgp.encrypt(opts.message, opts.password || '', privateKey || '', publicKey || '')
+                if ((message as any).err)
+                    return resolve({ error: 'ENCRYPT_ERROR', msg: "Błąd szyfrowania" })
+
 
                 let attachmentsPath: { path: string }[] | null = null;
                 if (opts.attachments?.length)

@@ -5,10 +5,11 @@ import accountController from "./account.controller";
 import { send } from "../utils/mailer";
 import Logger from "../library/Logger";
 import { join } from "path";
-import { decrypt, encrypt } from "../utils/cryptography";
+import { decrypt } from "../utils/cryptography";
 import userModel from "../models/user.model";
 import config from "../config";
 import { IDbUser } from "interfaces/user.interfaces";
+import { IMailAccountSettings } from "interfaces/account.interfaces";
 
 export const start = async () => {
     Logger.info('AUTOSENDER START')
@@ -19,31 +20,21 @@ export const start = async () => {
 
     for (let mailToSend of mailsToSend) {
         mailModel.update({ id: mailToSend.id, status: 'pending' })
+
         let dbUser = await userModel.findOne({ id: mailToSend.user })
         let mailConfig = await accountController.get(mailToSend.user, false)
 
-        let attachments: { path: string, password: string; sms: boolean }[] = [];
-        if (mailToSend.attachments)
-            try {
-                attachments = JSON.parse(mailToSend.attachments)
-            } catch {
-                attachments = []
-            }
+        let preparedMail = await prepareForSend(mailToSend, dbUser, mailConfig)
 
-        const messageLink = `${config.VIEW_URL}/decrypt/${mailToSend.id}`
-        const message = `<html> <a href="${messageLink}"> ODSZYFRUJ WIADOMOŚĆ</a></html>`
-        const mailOptions = getMailOptions(mailToSend, message, dbUser, attachments)
         let mailResponse = await send(
-            mailOptions,
-            mailConfig,
-            {
-                publicKey: decrypt(dbUser.publicKey || '', dbUser.encrypt || ''),
-                privateKey: decrypt(dbUser.privateKey || '', dbUser.encrypt || '')
-            }
+            preparedMail.mailOptions,
+            preparedMail.mailConfig,
+            preparedMail?.keys
         )
+
         if (mailResponse?.err)
             mailModel.update({
-                id: mailToSend.id,
+                id: preparedMail.id,
                 status: 'unsend',
                 error: mailResponse?.err,
                 date_delivered: moment().format('YYYY-MM-DD HH:mm'),
@@ -51,13 +42,39 @@ export const start = async () => {
             })
         else
             mailModel.update({
-                id: mailToSend.id,
+                id: preparedMail.id,
                 status: 'sent',
                 message_id: mailResponse?.messageId,
                 date_delivered: moment().format('YYYY-MM-DD HH:mm'),
                 from: mailResponse.from
             })
     }
+}
+
+export const prepareForSend = (mailToSend: IDbMail, dbUser: IDbUser, mailConfig: IMailAccountSettings | Object) => {
+
+    let attachments: { path: string, password: string; sms: boolean }[] = [];
+    if (mailToSend.attachments)
+        try {
+            attachments = JSON.parse(mailToSend.attachments)
+        } catch {
+            attachments = []
+        }
+
+    const messageLink = `${config.VIEW_URL}/decrypt/${mailToSend.id}`
+    const message = `<html> <a href="${messageLink}"> ODSZYFRUJ WIADOMOŚĆ</a></html>`
+    const mailOptions = getMailOptions(mailToSend, message, dbUser, attachments)
+
+    return {
+        id: mailToSend.id,
+        mailOptions,
+        mailConfig,
+        keys: {
+            publicKey: decrypt(dbUser.publicKey || '', dbUser.encrypt || ''),
+            privateKey: decrypt(dbUser.privateKey || '', dbUser.encrypt || '')
+        }
+    }
+
 }
 
 export const getMailOptions = (mailToSend: IDbMail, message: string, dbUser: IDbUser, attachments: { path: string, password: string; sms: boolean }[]) => {
