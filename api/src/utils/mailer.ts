@@ -56,19 +56,7 @@ export const send = (
                 logger: false
             });
             transporter.use('compile', inlineBase64({ cidPrefix: 'img_' }));
-            // transporter.use(
-            //     'stream',
-            //     nodemailerOpenpgp.openpgpEncrypt(
-            //         {
-            //             key: {
-            //                 privateKey: keys.privateKey,
-            //                 publicKey: keys.publicKey,
-            //                 // passphrase: mailOptions.password,
-            //             },
-            //             email: options.from.address,
-            //         }
-            //     )
-            // );
+
             transporter.sendMail(options, function (err, info) {
                 transporter.close()
                 if (err) {
