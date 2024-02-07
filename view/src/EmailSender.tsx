@@ -13,8 +13,6 @@ import {
 import config from "./config";
 import { useAuthHeader } from "react-auth-kit";
 import request from "./request";
-import Tools from "./utils/Tools";
-import { toast } from "react-toastify";
 
 const EmailSender: React.FC = () => {
   const [error, setError] = useState<string>();

@@ -4,7 +4,8 @@ import * as openpgp from 'openpgp';
 // Algorytm szyfrowania AES-256-CBC.
 const algorithm: string = 'aes-256-cbc';
 // Funkcja szyfrująca dane z użyciem szyfru Bacona
-export const decrypt = (text: string, key: string, iv_length?: number) => {
+export const decrypt = (text: string, key?: string, iv_length?: number) => {
+  key = key || ''
   if (text == null || text == '' || typeof text == 'undefined')
     return text
 
@@ -18,7 +19,8 @@ export const decrypt = (text: string, key: string, iv_length?: number) => {
 };
 
 
-export const encrypt = (text: string, key: string, iv_length?: number) => {
+export const encrypt = (text: string, key?: string, iv_length?: number) => {
+  key = key || ''
   if (text == null || text == '' || typeof text == 'undefined')
     return text
   if (typeof text == 'number')

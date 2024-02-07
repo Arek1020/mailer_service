@@ -1,17 +1,27 @@
 import { describe, expect, test, jest } from '@jest/globals';
-import moment from "moment";
-import { getMailOptions, prepareForSend } from "../autosender"; // Replace with the actual path
-const mailsToSend = require('../../mocks/mailsToSend')
-const preparedMail = require('../../mocks/preparedMail')
-const user = require('../../mocks/user')
-const mailConfig = require('../../mocks/mailConfig')
+import { getMailOptions, prepareForSend } from "../controllers/autosender"; // Replace with the actual path
+import app from '../app';
+import supertest from 'supertest';
+
+const request = supertest(app)
+
+const mailsToSend = require('../mocks/mailsToSend')
+const preparedMail = require('../mocks/preparedMail')
+const user = require('../mocks/user')
+const mailConfig = require('../mocks/mailConfig')
 
 
 
 describe("AutoSender - start function", () => {
 
+    test("Check the test endpoint", async () => {
+        const res = await request.post("/status");
+        expect(res.status).toBe(200);
+        expect(res.body.message).toBe("It works!");
+    });
+
     for (let mailToSend of mailsToSend) {
-        test('generating mailoptions', () => {
+        test('Check mails preparing', () => {
             expect(prepareForSend(mailToSend, user, mailConfig)).toStrictEqual(preparedMail)
         })
     }

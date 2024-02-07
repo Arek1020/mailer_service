@@ -1,5 +1,4 @@
 import { IMailAccountSettings } from "../interfaces/account.interfaces";
-import config from "../config"
 import userModel from "../models/user.model";
 import { sign } from "jsonwebtoken";
 import * as bcrypt from 'bcrypt'
@@ -20,7 +19,7 @@ const userController = {
             if (!dbUser)
                 return resolve({ err: 'USER NOT FOUND' })
 
-            const jwtToken = sign({ dbUser }, config.SECRETKEY);
+            const jwtToken = sign({ dbUser }, process.env.SECRETKEY || '');
 
             return resolve(jwtToken)
         })
@@ -39,7 +38,7 @@ const userController = {
             const compareRes = await bcrypt.compare(opts.password, dbUser.password || '')
             if (compareRes) { // password match
                 // const token = jwt.sign({ email: opts.email, id: dbUser?.id }, process.env.SECRET, { expiresIn: process.env.TOKEN_EXPIRATION + ' days' });
-                const token = JWT.sign({ email: opts.email, id: dbUser?.id }, config.SECRETKEY);
+                const token = JWT.sign({ email: opts.email, id: dbUser?.id }, process.env.SECRETKEY || '');
                 delete dbUser.password;
                 return { message: "Zalogowano pomyślnie", "token": token, user: JSON.stringify(dbUser) }
             } else { // password doesnt match

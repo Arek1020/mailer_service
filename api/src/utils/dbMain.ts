@@ -1,5 +1,4 @@
 import { createPool, Pool, escape as dbEscape } from 'mysql';
-import config from '../config';
 
 // const dataSource = DATA_SOURCES.mySqlDataSource;
 
@@ -11,14 +10,14 @@ let pool: Pool;
 export const init = () => {
     try {
         pool = createPool({
-            connectionLimit: config.DB_CONNECTION_LIMIT,
-            host: config.DB_HOST,
-            user: config.DB_USER,
-            password: config.DB_PASSWORD,
-            database: config.DB_DATABASE,
+            connectionLimit: 5,
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_DATABASE,
         });
 
-        console.debug('MySql Adapter Pool generated successfully for database: ', config.DB_DATABASE);
+        console.debug('MySql Adapter Pool generated successfully for database: ', process.env.DB_DATABASE);
     } catch (error) {
         console.error('[mysql.connector][init][Error]: ', error);
         throw new Error('failed to initialized pool');

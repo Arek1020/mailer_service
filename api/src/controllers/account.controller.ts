@@ -1,17 +1,17 @@
 import {  IMailAccountSettings } from "../interfaces/account.interfaces";
-import config from "../config"
+
 
 const accountController = {
     get: (user: number,  isPublic: boolean): Promise<IMailAccountSettings | Object> => {
         return new Promise(async (resolve, reject) => {
             let mailConfig: IMailAccountSettings | Object = {
                 name: 'DEFAULT ACCOUNT',
-                host: config.MAILER_HOST,
-                port: config.MAILER_SMTP_PORT,
-                smtpPort: config.MAILER_SMTP_PORT,
-                user: config.MAILER_USER,
+                host: process.env.MAILER_HOST,
+                port: process.env.MAILER_SMTP_PORT,
+                smtpPort: process.env.MAILER_SMTP_PORT,
+                user: process.env.MAILER_USER,
                 alias: '',
-                password: isPublic ? '' : config.MAILER_PASS
+                password: isPublic ? '' : process.env.MAILER_PASS
             }
 
 

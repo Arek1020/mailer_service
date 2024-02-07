@@ -8,7 +8,6 @@ import { writeFileSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
 import { removeDiacritics } from "../utils/diacritics";
 import { decrypt, encrypt } from "../utils/cryptography";
-import config from "../config";
 import { IDbUser } from "interfaces/user.interfaces";
 import userModel from "../models/user.model";
 import * as pgp from "../utils/pgp"
@@ -57,9 +56,9 @@ const mailController = {
                     opts.module || '',
                     opts.element || null,
                     attachmentsPath ? JSON.stringify(attachmentsPath) : null,
-                    encrypt(opts.password || '', user?.encrypt || config.SECRETKEY),
-                    encrypt(publicKey || '', user?.encrypt || config.SECRETKEY),
-                    encrypt(privateKey || '', user?.encrypt || config.SECRETKEY)
+                    encrypt(opts.password || '', user?.encrypt || process.env.SECRETKEY),
+                    encrypt(publicKey || '', user?.encrypt || process.env.SECRETKEY),
+                    encrypt(privateKey || '', user?.encrypt || process.env.SECRETKEY)
                 ])
 
             }

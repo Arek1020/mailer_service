@@ -1,12 +1,10 @@
 import { execute, escape } from "../utils/dbMain"
-import { IDbSettings } from "../interfaces/account.interfaces"
-import config from '../config'
 import { IContractor, IMember } from "interfaces/receiver.interface"
 
 const receiverModel = {
     getContractors: async (params: { cid: number, ids: number[] }) => {
-        let query = `SELECT k.*, c.code, o.Encrypt FROM ${config.DB_DATABASE}.fv_Kontrahenci k
-        INNER JOIN ${config.DB_DATABASE}.Oddzialy o ON o.id = k.ID_Oddzialu
+        let query = `SELECT k.*, c.code, o.Encrypt FROM ${process.env.DB_DATABASE}.fv_Kontrahenci k
+        INNER JOIN ${process.env.DB_DATABASE}.Oddzialy o ON o.id = k.ID_Oddzialu
         WHERE k.Aktywny AND k.ID_Oddzialu = ${escape(params.cid)} AND k.ID IN (${escape(params.ids)});`
         return execute<IContractor[]>(query, [], false)
     },

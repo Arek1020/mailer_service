@@ -1,4 +1,4 @@
-import React, { useState, useEffect, SyntheticEvent } from "react";
+import React, { useState, useEffect } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -34,7 +34,7 @@ const LoginScreen = (props: SignInProps) => {
     if (isAuthenticated()) {
       navigate({ pathname: "/" }, { replace: true });
     }
-  }, []);
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
@@ -150,8 +150,7 @@ const LoginScreen = (props: SignInProps) => {
                 Zaloguj się
               </Button>
               <Grid container>
-                <Grid item xs>
-                </Grid>
+                <Grid item xs></Grid>
                 <Grid item>
                   <Link href="/register" variant="body2">
                     {"Nie masz konta? Zarejestruj się"}

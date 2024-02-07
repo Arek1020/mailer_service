@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import config from '../config'
 import userModel from "../models/user.model";
 import Logger from "../library/Logger";
 import * as JWT from "jsonwebtoken";
@@ -12,7 +11,7 @@ export const requireSecret = async (req: Request, res: Response, next: NextFunct
     const token = authHeader.split(' ')[1];
     let decodedToken;
     try {
-        decodedToken = token == config.SECRETKEY;
+        decodedToken = token == process.env.SECRETKEY;
     } catch (err) {
         Logger.error(err)
         return res.status(403).json({ err: true, message: 'Brak autoryzacji - nieprawidłowy token' });
@@ -42,7 +41,7 @@ export const isAuthorize = async (req: Request, res: Response, next: NextFunctio
 
     let decodedToken: any;
     try {
-        decodedToken = JWT.verify(token, config.SECRETKEY);
+        decodedToken = JWT.verify(token, process.env.SECRETKEY || '');
     } catch (err) {
         Logger.log(err)
         return res.status(500).json({ err: true, message: 'Brak autoryzacji - nieprawidłowy token' });

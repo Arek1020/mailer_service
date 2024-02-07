@@ -3,13 +3,19 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "overrides": {
+    "react-scripts": {
+      "typescript": "^5.3.3"
+    }
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "test-api": "cd api && npm run test",
     "start-api": "cd api && npm start && cd ..",
     "start-view": "cd view && npm start && cd ..",
     "start": "npm-run-all --parallel start-api start-view",
-    "build-api": "cd api && npm run build",
-    "build-view": "cd view && npm run build",
+    "build-api": "cd api && npm ci && npm run build",
+    "build-view": "cd view && npm ci --force && npm run build",
     "build": "npm-run-all --parallel build-api build-view"
   },
   "repository": {

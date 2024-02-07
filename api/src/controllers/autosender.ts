@@ -7,7 +7,6 @@ import Logger from "../library/Logger";
 import { join } from "path";
 import { decrypt } from "../utils/cryptography";
 import userModel from "../models/user.model";
-import config from "../config";
 import { IDbUser } from "interfaces/user.interfaces";
 import { IMailAccountSettings } from "interfaces/account.interfaces";
 
@@ -61,7 +60,7 @@ export const prepareForSend = (mailToSend: IDbMail, dbUser: IDbUser, mailConfig:
             attachments = []
         }
 
-    const messageLink = `${config.VIEW_URL}/decrypt/${mailToSend.id}`
+    const messageLink = `${process.env.VIEW_URL}/decrypt/${mailToSend.id}`
     const message = `<html> <a href="${messageLink}"> ODSZYFRUJ WIADOMOŚĆ</a></html>`
     const mailOptions = getMailOptions(mailToSend, message, dbUser, attachments)
 
@@ -83,7 +82,7 @@ export const getMailOptions = (mailToSend: IDbMail, message: string, dbUser: IDb
         to: mailToSend.email,
         subject: mailToSend.subject,
         body: message,
-        password: decrypt(mailToSend.password, dbUser?.encrypt || config.SECRETKEY),
+        password: decrypt(mailToSend.password, dbUser?.encrypt || process.env.SECRETKEY),
         attachments: attachments?.map((x: {
             password: string; path: string; sms: boolean;
         }, index: any) => {

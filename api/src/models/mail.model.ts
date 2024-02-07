@@ -1,7 +1,6 @@
 import { execute, escape } from "../utils/dbMain"
 import moment from "moment"
 import { IDbMail } from "interfaces/mail.interfaces"
-import config from '../config'
 
 const mailModel = {
     findOne: async (opts: { status?: any, id?: string }): Promise<IDbMail> => {

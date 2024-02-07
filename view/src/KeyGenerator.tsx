@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { useFormik } from "formik";
-import * as Yup from "yup";
 import { TextField, Button, Container, Typography, Grid } from "@mui/material";
 import config from "./config";
 import { useAuthHeader } from "react-auth-kit";
@@ -37,7 +36,7 @@ const KeyGenerator: React.FC = () => {
         formik.setFieldValue("privateKey", result.privateKey);
         formik.setFieldValue("publicKey", result.publicKey);
       });
-  }, []);
+  }, [authHeader, formik]);
 
   return (
     <Container maxWidth="sm">
