@@ -10,8 +10,6 @@ dotenv.config()
 
 const cors = require('cors')
 
-console.log('ppp', process.env.PORT)
-
 const app = express();
 app.use('*', function (req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
