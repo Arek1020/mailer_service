@@ -4,13 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --verbose ./test",
+    "test": "jest --verbose ./tests",
     "startd": "node dist/index.js",
     "start": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
     "dev": "tsc-watch --onSuccess \"node ./dist/index.js\"",
-    "build": "tsc",
-    "postinstall": "npm run build"
-  },
+    "build": "tsc"
+    },
   "keywords": [],
   "author": "",
   "license": "ISC",
